@@ -4,9 +4,10 @@ import (
 	"crud/controller"
 	"crud/database"
 	"crud/entity"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -20,7 +21,10 @@ func main() {
 }
 
 func initHandlers(router *mux.Router) {
-	router.HandleFunc("/api/person/create", controller.CreatePerson).Methods(http.MethodPost)
+	personRouter := router.PathPrefix("/api/person").Subrouter()
+	personRouter.HandleFunc("/create", controller.CreatePerson).Methods(http.MethodPost)
+	personRouter.HandleFunc("/{id:[0-9]+}", controller.GetPersonById).Methods(http.MethodGet)
+	personRouter.HandleFunc("/list", controller.GetAllPeople).Methods(http.MethodGet)
 }
 
 func initDB() {
