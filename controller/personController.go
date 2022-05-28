@@ -4,7 +4,6 @@ import (
 	"crud/database"
 	"crud/entity"
 	"encoding/json"
-	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -12,9 +11,8 @@ import (
 )
 
 func CreatePerson(w http.ResponseWriter, r *http.Request) {
-	requestBody, _ := ioutil.ReadAll(r.Body)
 	var person entity.Person
-	json.Unmarshal(requestBody, &person)
+	json.NewDecoder(r.Body).Decode(&person)
 	tx := database.Db.Create(person)
 	w.Header().Set("Content-Type", "application/json")
 	if tx.Error != nil {
