@@ -12,16 +12,13 @@ import (
 
 func CreatePerson(w http.ResponseWriter, r *http.Request) {
 	var person entity.Person
-	json.NewDecoder(r.Body).Decode(&person)
+	handleError(json.NewDecoder(r.Body).Decode(&person), w)
 	tx := database.Db.Create(person)
-	w.Header().Set("Content-Type", "application/json")
-	if tx.Error != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Fatal(tx.Error.Error())
-		json.NewEncoder(w).Encode(tx.Error.Error())
-	} else {
+	handleError(tx.Error, w)
+	if tx.Error == nil {
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(person)
+		handleError(json.NewEncoder(w).Encode(person), w)
 	}
 }
 
@@ -31,7 +28,7 @@ func GetAllPeople(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(persons)
+	handleError(json.NewEncoder(w).Encode(persons), w)
 
 }
 
@@ -45,5 +42,12 @@ func GetPersonById(w http.ResponseWriter, r *http.Request) {
 	if person == (entity.Person{}) {
 		return
 	}
-	json.NewEncoder(w).Encode(person)
+	handleError(json.NewEncoder(w).Encode(person), w)
+}
+
+func handleError(err error, w http.ResponseWriter) {
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Println(err.Error())
+	}
 }
