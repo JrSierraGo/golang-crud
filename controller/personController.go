@@ -45,6 +45,17 @@ func GetPersonById(w http.ResponseWriter, r *http.Request) {
 	handleError(json.NewEncoder(w).Encode(person), w)
 }
 
+func DeletePersonById(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	key := vars["id"]
+
+	var person entity.Person
+	database.Db.Delete(&person, key)
+	w.Header().Set("Content-Type", "application/json")
+	handleError(json.NewEncoder(w).Encode("message: success"), w)
+
+}
+
 func handleError(err error, w http.ResponseWriter) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
