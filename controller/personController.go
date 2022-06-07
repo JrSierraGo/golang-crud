@@ -52,7 +52,7 @@ func DeletePersonById(w http.ResponseWriter, r *http.Request) {
 	var person entity.Person
 	database.Db.Delete(&person, key)
 	w.Header().Set("Content-Type", "application/json")
-	handleError(json.NewEncoder(w).Encode("message: success"), w)
+	handleError(json.NewEncoder(w).Encode("success"), w)
 
 }
 
