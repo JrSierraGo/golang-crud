@@ -26,6 +26,7 @@ func initHandlers(router *mux.Router) {
 	personRouter.HandleFunc("/{id:[0-9]+}", controller.GetPersonById).Methods(http.MethodGet)
 	personRouter.HandleFunc("/list", controller.GetAllPeople).Methods(http.MethodGet)
 	personRouter.HandleFunc("/{id}", controller.DeletePersonById).Methods(http.MethodDelete)
+	personRouter.HandleFunc("/update", controller.UpdatePerson).Methods(http.MethodPost)
 }
 
 func initDB() {

@@ -56,6 +56,18 @@ func DeletePersonById(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func UpdatePerson(w http.ResponseWriter, r *http.Request) {
+	var person entity.Person
+	handleError(json.NewDecoder(r.Body).Decode(&person), w)
+	result := database.Db.Where("id = ?", person.ID).Updates(&person)
+	handleError(result.Error, w)
+	if result.Error == nil && result.RowsAffected != 0 {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		handleError(json.NewEncoder(w).Encode(person), w)
+	}
+}
+
 func handleError(err error, w http.ResponseWriter) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
